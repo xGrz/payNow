@@ -1,0 +1,52 @@
+{
+    "name": "xgrz/paynow",
+    "description": "PayNow payments with Laravel",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "paynow"
+    ],
+    "authors": [
+        {
+            "name": "Grzegorz Byśkiniewicz",
+            "email": "grzesiek.byskiniewicz@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0 || ^12.0 || ^13.0",
+        "pay-now/paynow-php-sdk": "^3.0",
+        "symfony/http-client": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5 || ^11.5",
+        "orchestra/testbench": "^8.0 || ^9.0 || ^10.0"
+    },
+    "scripts": {
+        "test": "phpunit -c phpunit.xml.dist --testdox --colors",
+        "test-coverage": "phpunit -c phpunit.xml.dist --coverage-text"
+    },
+    "autoload": {
+        "psr-4": {
+            "Xgrz\\PayNow\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Xgrz\\PayNow\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "xGrz\\PayNow\\PayNowServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}

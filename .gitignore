@@ -1,0 +1,4 @@
+.junie/
+vendor/
+composer.lock
+.phpunit.cache/
