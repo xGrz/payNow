@@ -40,7 +40,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "xGrz\\PayNow\\PayNowServiceProvider"
+                "Xgrz\\PayNow\\PayNowServiceProvider"
             ]
         }
     },
