@@ -1,0 +1,1 @@
+# PayNow Laravel plugin
