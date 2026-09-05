@@ -6,8 +6,8 @@ return [
         'url' => 'paynow-webhook',
     ],
     'credentials' => [
-        'api_key' => env('PAYNOW_API_KEY', ''),
-        'signature_key' => env('PAYNOW_SIGNATURE_KEY', ''),
+        'api_key' => env('PAYNOW_API_KEY', '97a55694-5478-43b5-b406-fb49ebfdd2b5'),
+        'signature_key' => env('PAYNOW_SIGNATURE_KEY', 'b305b996-bca5-4404-a0b7-2ccea3d2b64b'),
     ],
     /*
      * Protect PayNow models from deletion.

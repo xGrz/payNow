@@ -8,6 +8,8 @@ use Paynow\Exception\PaynowException;
 use Xgrz\PayNow\Enums\PaymentStatus;
 use Xgrz\PayNow\Enums\RefundStatus;
 use Xgrz\PayNow\Exceptions\PayNowStatusNameException;
+use Xgrz\PayNow\Models\PaymentTransaction;
+use Xgrz\PayNow\Models\PayNowPayment;
 use Xgrz\PayNow\Services\PayNowMethodsService;
 use Xgrz\PayNow\Services\PayNowNotificationService;
 use Xgrz\PayNow\Services\PayNowRefundService;
@@ -59,5 +61,13 @@ class PayNow
     public static function handleNotification(Request $request): bool
     {
         return PayNowNotificationService::make($request);
+    }
+
+    /**
+     * @throws PaynowException
+     */
+    public static function send(PaymentTransaction $transaction): PayNowPayment
+    {
+        return $transaction->send();
     }
 }

@@ -11,7 +11,6 @@ abstract class PayNowTestCase extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->artisan('migrate');
     }
 
     protected function getPackageProviders($app): array

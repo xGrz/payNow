@@ -3,6 +3,11 @@
 namespace Xgrz\PayNow\Models;
 
 use Carbon\CarbonInterval;
+use Illuminate\Support\Facades\Log;
+use Paynow\Exception\PaynowException;
+use Paynow\Service\Payment;
+use Xgrz\PayNow\Enums\PaymentStatus;
+use Xgrz\PayNow\Services\ConfigService;
 
 class PaymentTransaction
 {
@@ -10,7 +15,7 @@ class PaymentTransaction
     protected ?int $amount = NULL;
     protected string $currency_code = 'PLN';
     protected ?string $description = NULL;
-    protected string $email;
+    protected string $email = '';
     protected ?string $firstName = NULL;
     protected ?string $lastName = NULL;
     protected ?string $phone = NULL;
@@ -34,33 +39,23 @@ class PaymentTransaction
     private ?PayNowPayment $payment = NULL;
     private ?int $payNowMethodId = NULL;
 
-    public static function make(string $identifier): static
+    public static function make(string $email, string $purposeOfPayment, float $amount, string $currencyCode = 'PLN'): static
     {
-        return new static($identifier);
+        return new static($email, $purposeOfPayment, $amount, $currencyCode);
     }
 
-    public function __construct(string $identifier)
+    private function __construct(string $mail, string $purposeOfPayment, float $amount, string $currencyCode = 'PLN')
     {
-        $this->identifier = $identifier;
-        $this->payment = new PayNowPayment();
-    }
-
-    public function amount(float $amount, string $currencyCode = 'PLN'): static
-    {
+        $this->email = $mail;
+        $this->identifier = $purposeOfPayment;
         $this->amount = (int)round($amount * 100);
         $this->currency_code = $currencyCode;
-        return $this;
+        $this->payment = new PayNowPayment();
     }
 
     public function phone(?string $phone): static
     {
         $this->phone = $phone ? preg_replace('/\D/', '', $phone) : NULL;
-        return $this;
-    }
-
-    public function email(string $email): static
-    {
-        $this->email = $email;
         return $this;
     }
 
@@ -87,11 +82,9 @@ class PaymentTransaction
         return $this;
     }
 
-    public function method(int $id): static
+    public function method(int $methodId): static
     {
-        // check if payment method is available
-
-        $this->payNowMethodId = $id;
+        $this->payNowMethodId = $methodId;
         return $this;
     }
 
@@ -157,7 +150,7 @@ class PaymentTransaction
             'amount' => $this->amount,
             'currency' => $this->currency_code,
             'externalId' => $this->identifier,
-            'description' => $this->description,
+            'description' => $this->description ?? $this->identifier,
             'paymentMethodId' => $this->payNowMethodId,
             'buyer' => [
                 'email' => $this->email,
@@ -179,5 +172,56 @@ class PaymentTransaction
             ->undot()
             ->toArray();
     }
+
+    protected function storePayment(?string $url): void
+    {
+        $this->payment = (new PayNowPayment())
+            ->fill([
+                'amount' => self::payload()['amount'] / 100,
+                'currency_code' => self::payload()['currency'],
+                'external_id' => self::payload()['externalId'],
+                'description' => self::payload()['description'],
+//                'paymentMethodId' => self::payload()['paymentMethodId'],
+//                'buyer' => self::payload()['buyer'],
+                'email' => self::payload()['buyer']['email'],
+                'continueUrl' => self::payload()['continueUrl'],
+                'link' => $url,
+            ]);
+        $this->payment->save();
+    }
+
+    protected function storeAttempt(PaymentStatus $status, string $paymentId): void
+    {
+        $this
+            ->payment
+            ->attempts()
+            ->create(['status' => $status, 'payment_id' => $paymentId]);
+    }
+
+    /**
+     * @throws PaynowException
+     */
+    public function send(): ?PayNowPayment
+    {
+        try {
+            $result = (new Payment(ConfigService::getApiClient()))
+                ->authorize(self::payload());
+
+            $this->storePayment($result->getRedirectUrl());
+            $this->storeAttempt(PaymentStatus::findByName($result->getStatus()), $result->getPaymentId());
+        } catch (PaynowException $e) {
+            Log::error(
+                $e->getMessage(),
+                [
+                    'code' => $e->getCode(),
+                    'payload' => self::payload(),
+                    'errors' => json_decode(json_encode($e->getErrors()), true),
+                ]
+            );
+            throw new PayNowException(collect($e->getErrors()[0]->getMessage())->first());
+        }
+        return $this->payment;
+    }
+
 
 }
