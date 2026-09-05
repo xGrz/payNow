@@ -22,7 +22,6 @@ enum PaymentStatus: string
             self::CONFIRMED => 'success',
             self::EXPIRED, self::ABANDONED => 'warning',
             self::REJECTED, self::ERROR => 'danger',
-            default => '',
         };
     }
 
@@ -39,7 +38,7 @@ enum PaymentStatus: string
     /**
      * @throws PayNowStatusNameException
      */
-    public static function findByName(string $name): ?self
+    public static function findByName(string $name): self
     {
         foreach (self::cases() as $case) {
             if ($case->name === strtoupper($name)) {
