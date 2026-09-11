@@ -24,12 +24,12 @@ class PayNowRefundService
         ]);
 
         try {
-            $refundAction = new Refund(ConfigService::getApiClient())
+            $refundAction = (new Refund(ConfigService::getApiClient()))
                 ->create(
                     $payment->attempt->payment_id,
                     uniqid($payment->attempt->id . '_'),
                     (int)round($amount * 100),
-                    $reason->name,
+                    $reason?->name,
                 );
 
             $refund->update([

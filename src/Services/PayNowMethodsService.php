@@ -7,15 +7,19 @@ use Paynow\Exception\ConfigurationException;
 use Paynow\Exception\PaynowException;
 use Paynow\Model\PaymentMethods\PaymentMethod;
 use Paynow\Service\Payment;
-use Xgrz\PayNow\Exceptions\PayNowException as GrzPayNowException;
+use Xgrz\PayNow\Exceptions\PayNowException as XgrzPayNowException;
 
 class PayNowMethodsService
 {
+    /**
+     * @throws XgrzPayNowException
+     * @throws ConfigurationException
+     */
     public static function all(float $amount, string $currencyCode = 'PLN'): array
     {
         try {
             $methods = (new Payment(ConfigService::getApiClient()))
-                ->getPaymentMethods($currencyCode, $amount)
+                ->getPaymentMethods($currencyCode, (int) round($amount * 100))
                 ->getAll();
             return collect($methods)
                 ->transform(fn(PaymentMethod $method) => [
@@ -41,9 +45,7 @@ class PayNowMethodsService
                 'amount' => $amount,
                 'currencyCode' => $currencyCode,
             ]);
-            throw new GrzPayNowException($logMessage);
-        } finally {
-            return [];
+            throw new XgrzPayNowException($logMessage);
         }
     }
 

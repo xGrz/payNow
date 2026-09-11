@@ -14,11 +14,17 @@ use Xgrz\PayNow\Enums\RefundStatus;
 use Xgrz\PayNow\Observers\PayNowPaymentObserver;
 
 /**
- * @property-read  integer                  $id
- * @property-read ?PayNowAttempt            $attempt
+ * @property-read  integer                       $id
+ * @property-read ?PayNowAttempt                 $attempt
  * @property-read Collection<int, PayNowAttempt> $attempts
  * @property-read Collection<int, PayNowRefund>  $refunds
- * @property-read ?PaymentStatus            $status
+ * @property-read ?PaymentStatus                 $status
+ * @property float                               $amount
+ * @property string                              $currency_code
+ * @property string                              $description
+ * @property string                              $external_id
+ * @property string                              $email
+ * @property string                              $continue_url
  */
 #[ObservedBy([PayNowPaymentObserver::class])]
 class PayNowPayment extends Model

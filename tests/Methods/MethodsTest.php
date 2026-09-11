@@ -11,7 +11,6 @@ class MethodsTest extends PayNowTestCase
     {
         $this->setupPublicCredentials();
         $methods = PayNow::methods(1000);
-        $this->assertIsArray($methods);
         $this->assertNotEmpty($methods);
     }
 }
