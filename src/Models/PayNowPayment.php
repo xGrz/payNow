@@ -16,8 +16,8 @@ use Xgrz\PayNow\Observers\PayNowPaymentObserver;
 /**
  * @property-read  integer                  $id
  * @property-read ?PayNowAttempt            $attempt
- * @property-read Collection<PayNowAttempt> $attempts
- * @property-read Collection<PayNowRefund>  $refunds
+ * @property-read Collection<int, PayNowAttempt> $attempts
+ * @property-read Collection<int, PayNowRefund>  $refunds
  * @property-read ?PaymentStatus            $status
  */
 #[ObservedBy([PayNowPaymentObserver::class])]

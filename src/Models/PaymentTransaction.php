@@ -39,9 +39,9 @@ class PaymentTransaction
     private ?PayNowPayment $payment = NULL;
     private ?int $payNowMethodId = NULL;
 
-    public static function make(string $email, string $purposeOfPayment, float $amount, string $currencyCode = 'PLN'): static
+    public static function make(string $email, string $purposeOfPayment, float $amount, string $currencyCode = 'PLN'): self
     {
-        return new static($email, $purposeOfPayment, $amount, $currencyCode);
+        return new self($email, $purposeOfPayment, $amount, $currencyCode);
     }
 
     private function __construct(string $mail, string $purposeOfPayment, float $amount, string $currencyCode = 'PLN')
@@ -218,7 +218,7 @@ class PaymentTransaction
                     'errors' => json_decode(json_encode($e->getErrors()), true),
                 ]
             );
-            throw new PayNowException(collect($e->getErrors()[0]->getMessage())->first());
+            throw new PayNowException($e->getErrors()[0]->getMessage());
         }
         return $this->payment;
     }

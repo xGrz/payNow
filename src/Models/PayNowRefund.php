@@ -17,6 +17,7 @@ use Xgrz\PayNow\Observers\PayNowRefundObserver;
  * @property-read RefundStatus $status
  * @property-read RefundReason $reason
  * @property ?string $refund_id
+ * @property ?float $amount
  *
  */
 #[ObservedBy([PayNowRefundObserver::class])]

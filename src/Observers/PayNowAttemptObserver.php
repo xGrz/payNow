@@ -9,7 +9,7 @@ class PayNowAttemptObserver
     public function deleting(PayNowAttempt $payNowAttempt)
     {
         if (config('paynow.protect', true)) {
-            throw new \RuntimeException('Cannot delete PayNowAttempt model', $payNowAttempt->toArray());
+            throw new \RuntimeException('Cannot delete PayNowAttempt model');
         }
     }
 }
