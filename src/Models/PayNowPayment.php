@@ -3,14 +3,23 @@
 namespace Xgrz\PayNow\Models;
 
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Xgrz\PayNow\Casts\Amount;
+use Xgrz\PayNow\Enums\PaymentStatus;
 use Xgrz\PayNow\Enums\RefundStatus;
 use Xgrz\PayNow\Observers\PayNowPaymentObserver;
 
+/**
+ * @property-read  integer                  $id
+ * @property-read ?PayNowAttempt            $attempt
+ * @property-read Collection<PayNowAttempt> $attempts
+ * @property-read Collection<PayNowRefund>  $refunds
+ * @property-read ?PaymentStatus            $status
+ */
 #[ObservedBy([PayNowPaymentObserver::class])]
 class PayNowPayment extends Model
 {

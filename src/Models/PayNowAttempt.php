@@ -9,10 +9,11 @@ use xGrz\PayNow\Enums\PaymentStatus;
 use Xgrz\PayNow\Observers\PayNowAttemptObserver;
 
 /**
- * @property-read  integer $id
- * @property integer       $paynow_payment_id
- * @property string        $payment_id
- * @property string        $status
+ * @property-read  integer      $id
+ * @property integer            $paynow_payment_id
+ * @property string             $payment_id
+ * @property string             $status
+ * @property-read PayNowPayment $payment
  */
 #[ObservedBy([PayNowAttemptObserver::class])]
 class PayNowAttempt extends Model
