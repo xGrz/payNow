@@ -5,7 +5,7 @@ namespace Xgrz\PayNow\Models;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use xGrz\PayNow\Enums\PaymentStatus;
+use Xgrz\PayNow\Enums\PaymentStatus;
 use Xgrz\PayNow\Observers\PayNowAttemptObserver;
 
 /**
