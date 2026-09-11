@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Xgrz\PayNow\Events\PayNowPaymentStatusChangedEvent;
 use Xgrz\PayNow\Facades\PayNow;
 use Xgrz\PayNow\Models\PayNowAttempt;
+use Xgrz\PayNow\Models\PayNowPayment;
 
 class NotificationWebhookController
 {
@@ -21,7 +22,9 @@ class NotificationWebhookController
                 ->first()
                 ->payment;
 
-            PayNowPaymentStatusChangedEvent::dispatch($payment);
+            if ($payment instanceof PayNowPayment) {
+                PayNowPaymentStatusChangedEvent::dispatch($payment);
+            }
         }
 
         return $consumed
