@@ -15,6 +15,7 @@ class Amount implements CastsAttributes
 
     public function set(Model $model, string $key, mixed $value, array $attributes): int
     {
-        return Str::replaceLast(',', '.', $value) * 100;
+        $normalized = Str::replaceLast(',', '.', (string) $value);
+        return (int) round((float) $normalized * 100);
     }
 }
