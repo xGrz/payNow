@@ -3,15 +3,18 @@
 namespace Xgrz\PayNow\Services;
 
 use Illuminate\Support\Facades\Log;
+use Paynow\Exception\ConfigurationException;
+use Paynow\Exception\PaynowException;
 use Paynow\Model\PaymentMethods\PaymentMethod;
 use Paynow\Service\Payment;
+use Xgrz\PayNow\Exceptions\PayNowException as GrzPayNowException;
 
 class PayNowMethodsService
 {
     public static function all(float $amount, string $currencyCode = 'PLN'): array
     {
         try {
-            $methods = new Payment(ConfigService::getApiClient())
+            $methods = (new Payment(ConfigService::getApiClient()))
                 ->getPaymentMethods($currencyCode, $amount)
                 ->getAll();
             return collect($methods)
@@ -25,13 +28,21 @@ class PayNowMethodsService
                 ])
                 ->keyBy('id')
                 ->toArray();
-        } catch (\Throwable $e) {
-            $logMessage = $e->getErrors() ?? $e->getMessage();
+        } catch (ConfigurationException $e) {
+            $logMessage = $e->getMessage();
             Log::error($logMessage, [
                 'amount' => $amount,
                 'currencyCode' => $currencyCode,
             ]);
-
+            throw $e;
+        } catch (PaynowException $e) {
+            $logMessage = collect($e->getErrors())->first()->getMessage();
+            Log::error($logMessage, [
+                'amount' => $amount,
+                'currencyCode' => $currencyCode,
+            ]);
+            throw new GrzPayNowException($logMessage);
+        } finally {
             return [];
         }
     }

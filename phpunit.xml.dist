@@ -8,6 +8,9 @@
         <testsuite name="Casts">
             <directory>tests/Transaction</directory>
         </testsuite>
+        <testsuite name="Casts">
+            <directory>tests/Methods</directory>
+        </testsuite>
     </testsuites>
 
     <source>

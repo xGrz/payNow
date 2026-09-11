@@ -5,6 +5,7 @@ namespace Xgrz\PayNow\Tests\Transaction;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Xgrz\PayNow\Enums\PaymentStatus;
 use Xgrz\PayNow\Models\PaymentTransaction;
+use Xgrz\PayNow\Models\PayNowAttempt;
 use Xgrz\PayNow\Models\PayNowPayment;
 use Xgrz\PayNow\Tests\PayNowTestCase;
 
@@ -185,11 +186,7 @@ class TransactionTest extends PayNowTestCase
 
     public function test_can_send_payment()
     {
-
-        config([
-            'paynow.credentials.api_key' => '97a55694-5478-43b5-b406-fb49ebfdd2b5',
-            'paynow.credentials.signature_key' => 'b305b996-bca5-4404-a0b7-2ccea3d2b64b',
-        ]);
+        $this->setupPublicCredentials();
         $purposeOfPayment = 'Order ZZ/2020/2021-' . time();
 
         $transaction = PaymentTransaction::make('test@example.com', $purposeOfPayment, 100.10)
@@ -205,6 +202,8 @@ class TransactionTest extends PayNowTestCase
             'description' => $purposeOfPayment,
             'email' => 'test@example.com',
         ]);
+
+        $this->assertTrue($transaction->attempts->count() === 1);
 
         $this->assertSame(PaymentStatus::NEW, $transaction->status);
         $this->assertSame(PaymentStatus::NEW, $transaction->attempt->status);
