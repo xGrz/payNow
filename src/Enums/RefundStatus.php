@@ -34,7 +34,7 @@ enum RefundStatus: string
     /**
      * @throws PayNowStatusNameException
      */
-    public static function findByName(string $name): ?self
+    public static function findByName(string $name): self
     {
         foreach (self::cases() as $case) {
             if ($case->name === strtoupper($name)) {
