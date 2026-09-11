@@ -13,7 +13,7 @@ class PayNowRefundsStatesCommand extends Command
 
     public function handle(): int
     {
-        new UpdatePayNowRefundsStatesJob()->handle();
+        (new UpdatePayNowRefundsStatesJob())->handle();
 
         return 0;
     }
