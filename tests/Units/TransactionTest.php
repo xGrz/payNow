@@ -1,6 +1,6 @@
 <?php
 
-namespace Xgrz\PayNow\Tests\Transaction;
+namespace Xgrz\PayNow\Tests\Units;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Xgrz\PayNow\Enums\PaymentStatus;
@@ -207,7 +207,7 @@ class TransactionTest extends PayNowTestCase
 
         $this->assertSame(PaymentStatus::NEW, $transaction->status);
         $this->assertSame(PaymentStatus::NEW, $transaction->attempt->status);
-        $this->assertNotEmpty($transaction->attempt->payment_id, 'Transaction payment id (from api) is empty');
+        $this->assertNotEmpty($transaction->attempt->payment_id, 'Units payment id (from api) is empty');
     }
 
 }

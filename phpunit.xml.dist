@@ -5,11 +5,11 @@
     cacheDirectory=".phpunit.cache"
 >
     <testsuites>
-        <testsuite name="Casts">
-            <directory>tests/Transaction</directory>
+        <testsuite name="Units">
+            <directory>tests/Units</directory>
         </testsuite>
-        <testsuite name="Casts">
-            <directory>tests/Methods</directory>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
         </testsuite>
     </testsuites>
 
