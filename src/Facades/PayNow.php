@@ -27,9 +27,9 @@ class PayNow
         return PayNowMethodsService::available($amount, $currencyCode);
     }
 
-    public static function payment()
+    public static function buildPayment(string $email, string $purposeOfPayment, float $amount, string $currencyCode = 'PLN'): PaymentTransaction
     {
-        // todo
+        return PaymentTransaction::make($email, $purposeOfPayment, $amount, $currencyCode);
     }
 
 
