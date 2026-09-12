@@ -38,6 +38,7 @@ class PaymentTransaction
     private ?string $callbackUrl = NULL;
     private ?PayNowPayment $payment = NULL;
     private ?int $payNowMethodId = NULL;
+    private bool $shouldCopyKnownAddresses = false;
 
     public static function make(string $email, string $purposeOfPayment, float $amount, string $currencyCode = 'PLN'): self
     {
@@ -85,6 +86,12 @@ class PaymentTransaction
     public function method(int $methodId): static
     {
         $this->payNowMethodId = $methodId;
+        return $this;
+    }
+
+    public function copyKnownAddresses(bool $shouldCopyKnownAddresses = true): static
+    {
+        $this->shouldCopyKnownAddresses = $shouldCopyKnownAddresses;
         return $this;
     }
 
@@ -158,8 +165,8 @@ class PaymentTransaction
                 'lastName' => $this->lastName,
                 'phone' => $this->getPhoneStruct(),
                 'address' => [
-                    'billing' => $this->getBillingAddress(),
-                    'shipping' => $this->getShippingAddress(),
+                    'billing' => $this->shouldCopyKnownAddresses ? ($this->getBillingAddress() ?? $this->getShippingAddress()) : $this->getBillingAddress(),
+                    'shipping' => $this->shouldCopyKnownAddresses ? ($this->getShippingAddress() ?? $this->getBillingAddress()) : $this->getShippingAddress(),
                 ],
             ],
             'validityTime' => (int)CarbonInterval::fromString(config('paynow.timeout', '12h'))->totalSeconds,

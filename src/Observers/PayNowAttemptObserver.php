@@ -2,6 +2,7 @@
 
 namespace Xgrz\PayNow\Observers;
 
+use RuntimeException;
 use Xgrz\PayNow\Models\PayNowAttempt;
 
 class PayNowAttemptObserver
@@ -9,7 +10,7 @@ class PayNowAttemptObserver
     public function deleting(PayNowAttempt $payNowAttempt)
     {
         if (config('paynow.protect', true)) {
-            throw new \RuntimeException('Cannot delete PayNowAttempt model');
+            throw new RuntimeException('Cannot delete PayNowAttempt model');
         }
     }
 }

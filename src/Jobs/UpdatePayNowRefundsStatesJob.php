@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 use Xgrz\PayNow\Enums\RefundStatus;
 use Xgrz\PayNow\Facades\PayNow;
 use Xgrz\PayNow\Models\PayNowRefund;
@@ -44,7 +45,7 @@ class UpdatePayNowRefundsStatesJob implements ShouldQueue
             if ($refundStatus instanceof RefundStatus) {
                 $refund->update(['status' => $refundStatus]);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::warning('PayNow refund status update failed: ' . $e->getMessage());
         }
     }

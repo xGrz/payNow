@@ -5,7 +5,6 @@ namespace Xgrz\PayNow\Tests\Units;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Xgrz\PayNow\Enums\PaymentStatus;
 use Xgrz\PayNow\Models\PaymentTransaction;
-use Xgrz\PayNow\Models\PayNowAttempt;
 use Xgrz\PayNow\Models\PayNowPayment;
 use Xgrz\PayNow\Tests\PayNowTestCase;
 
@@ -209,5 +208,120 @@ class TransactionTest extends PayNowTestCase
         $this->assertSame(PaymentStatus::NEW, $transaction->attempt->status);
         $this->assertNotEmpty($transaction->attempt->payment_id, 'Units payment id (from api) is empty');
     }
+
+    public function test_can_copy_shipping_address_to_billing(): void
+    {
+        $transaction = PaymentTransaction::make('test@example.com', 'Order ZZ/2020/2021', 100.10)
+            ->copyKnownAddresses()
+            ->shippingAddress('al. Jerozolimskie', '100', '2', '00-950', 'Warszawa');
+
+        $payloadAddresses = $transaction->payload()['buyer']['address'] ?? [];
+
+        $this->assertSame($payloadAddresses['billing'], [
+            'zipCode' => '00-950',
+            'city' => 'Warszawa',
+            'street' => 'al. Jerozolimskie',
+            'houseNumber' => '100',
+            'apartmentNumber' => '2',
+            'country' => 'PL',
+        ]);
+    }
+
+    public function test_can_copy_billing_address_to_shipping(): void
+    {
+        $transaction = PaymentTransaction::make('test@example.com', 'Order ZZ/2020/2021', 100.10)
+            ->copyKnownAddresses()
+            ->billingAddress('al. Jerozolimskie', '100', '2', '00-950', 'Warszawa');
+
+        $payloadAddresses = $transaction->payload()['buyer']['address'] ?? [];
+
+        $this->assertSame($payloadAddresses['shipping'], [
+            'zipCode' => '00-950',
+            'city' => 'Warszawa',
+            'street' => 'al. Jerozolimskie',
+            'houseNumber' => '100',
+            'apartmentNumber' => '2',
+            'country' => 'PL',
+        ]);
+    }
+
+    public function test_protect_coping_shipping_address_when_billing_is_filled()
+    {
+        $transaction = PaymentTransaction::make('test@example.com', 'Order ZZ/2020/2021', 100.10)
+            ->copyKnownAddresses()
+            ->billingAddress('al. Stanów Zjednoczonych', '200', '21', '00-951', 'Kraków')
+            ->shippingAddress('al. Jerozolimskie', '100', '2', '00-950', 'Warszawa');
+
+        $payloadAddresses = $transaction->payload()['buyer']['address'] ?? [];
+
+        $this->assertSame($payloadAddresses['shipping'], [
+            'zipCode' => '00-950',
+            'city' => 'Warszawa',
+            'street' => 'al. Jerozolimskie',
+            'houseNumber' => '100',
+            'apartmentNumber' => '2',
+            'country' => 'PL',
+        ]);
+
+        $this->assertSame($payloadAddresses['billing'], [
+            'zipCode' => '00-951',
+            'city' => 'Kraków',
+            'street' => 'al. Stanów Zjednoczonych',
+            'houseNumber' => '200',
+            'apartmentNumber' => '21',
+            'country' => 'PL',
+        ]);
+    }
+
+    public function test_copying_shipping_address_is_not_performed_when_flag_is_set_to_false(): void
+    {
+        $transaction = PaymentTransaction::make('test@example.com', 'Order ZZ/2020/2021', 100.10)
+            ->copyKnownAddresses(false)
+            ->shippingAddress('al. Jerozolimskie', '100', '2', '00-950', 'Warszawa');
+
+        $payloadAddresses = $transaction->payload()['buyer']['address'] ?? [];
+
+        $this->assertSame($payloadAddresses['shipping'], [
+            'zipCode' => '00-950',
+            'city' => 'Warszawa',
+            'street' => 'al. Jerozolimskie',
+            'houseNumber' => '100',
+            'apartmentNumber' => '2',
+            'country' => 'PL',
+        ]);
+
+        $this->assertArrayNotHasKey('billing', $payloadAddresses);
+    }
+
+    public function test_copying_billing_address_is_not_performed_when_flag_is_set_to_false(): void
+    {
+        $transaction = PaymentTransaction::make('test@example.com', 'Order ZZ/2020/2021', 100.10)
+            ->copyKnownAddresses(false)
+            ->billingAddress('al. Jerozolimskie', '100', '2', '00-950', 'Warszawa');
+
+        $payloadAddresses = $transaction->payload()['buyer']['address'] ?? [];
+
+        $this->assertSame($payloadAddresses['billing'], [
+            'zipCode' => '00-950',
+            'city' => 'Warszawa',
+            'street' => 'al. Jerozolimskie',
+            'houseNumber' => '100',
+            'apartmentNumber' => '2',
+            'country' => 'PL',
+        ]);
+
+        $this->assertArrayNotHasKey('shipping', $payloadAddresses);
+    }
+
+    public function test_default_behaviour_of_coping_is_set_to_false(): void
+    {
+        $transaction = PaymentTransaction::make('test@example.com', 'Order ZZ/2020/2021', 100.10)
+            ->billingAddress('al. Jerozolimskie', '100', '2', '00-950', 'Warszawa');
+        $payloadAddresses = $transaction->payload()['buyer']['address'] ?? [];
+
+        $this->assertArrayNotHasKey('shipping', $payloadAddresses);
+        $this->assertArrayHasKey('billing', $payloadAddresses);
+    }
+
 
 }

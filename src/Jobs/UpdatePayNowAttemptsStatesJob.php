@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 use Xgrz\PayNow\Enums\PaymentStatus;
 use Xgrz\PayNow\Events\PayNowPaymentStatusChangedEvent;
 use Xgrz\PayNow\Facades\PayNow;
@@ -52,7 +53,7 @@ class UpdatePayNowAttemptsStatesJob implements ShouldQueue
 
             }
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::warning('PayNow payment status update failed: ' . $e->getMessage());
         }
     }
