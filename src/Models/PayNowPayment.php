@@ -21,6 +21,7 @@ use Xgrz\PayNow\Observers\PayNowPaymentObserver;
  * @property-read ?PaymentStatus                 $status
  * @property float                               $amount
  * @property string                              $currency_code
+ * @property string                              $link
  * @property string                              $description
  * @property string                              $external_id
  * @property string                              $email

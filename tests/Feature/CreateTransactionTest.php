@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Xgrz\PayNow\Enums\PaymentStatus;
 use Xgrz\PayNow\Facades\PayNow;
 use Xgrz\PayNow\Models\PaymentTransaction;
+use Xgrz\PayNow\Models\PayNowPayment;
 use Xgrz\PayNow\Tests\PayNowTestCase;
 
 class CreateTransactionTest extends PayNowTestCase
@@ -52,5 +53,19 @@ class CreateTransactionTest extends PayNowTestCase
 
         $this->assertInstanceOf(PaymentStatus::class, $status);
         $this->assertSame($originalStatus, $status);
+    }
+
+    public function test_transaction_is_stored_after_send(): void
+    {
+        $payment = self::setupPaymentTransaction()->send()->refresh();
+
+        $this->assertInstanceOf(PayNowPayment::class, $payment);
+        $this->assertStringContainsString('Order', $payment->external_id);
+        $this->assertSame(200, $payment->amount);
+        $this->assertSame('test@example.com', $payment->email);
+        $this->assertStringContainsString('https://google.com', $payment->continue_url);
+
+        $this->assertStringContainsString('paynow.pl', $payment->link);
+        $this->assertStringContainsString($payment->attempt->payment_id, $payment->link);
     }
 }
