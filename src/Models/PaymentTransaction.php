@@ -191,7 +191,7 @@ class PaymentTransaction
 //                'paymentMethodId' => self::payload()['paymentMethodId'],
 //                'buyer' => self::payload()['buyer'],
                 'email' => self::payload()['buyer']['email'],
-                'continueUrl' => self::payload()['continueUrl'],
+                'continue_url' => self::payload()['continueUrl'],
                 'link' => $url,
             ]);
         $this->payment->save();
