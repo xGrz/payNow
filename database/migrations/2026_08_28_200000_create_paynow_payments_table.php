@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('email')->nullable();
             $table->text('continue_url')->nullable();
-            $table->string('idempotencyKey')->nullable();
-
             $table->text('link')->nullable();
             $table->string('paynowable_type')->nullable();
             $table->string('paynowable_id')->nullable();
