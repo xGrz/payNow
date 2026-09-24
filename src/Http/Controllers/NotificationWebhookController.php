@@ -13,7 +13,7 @@ class NotificationWebhookController
 {
     public function __invoke(Request $request)
     {
-        Log::info('PayNow notification received', $request->json('paymentId'));
+        Log::info('PayNow notification received', $request->toArray());
 
         $consumed = PayNow::handleNotification($request);
         if ($consumed) {
